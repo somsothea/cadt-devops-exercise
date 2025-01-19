@@ -29,6 +29,7 @@ jobs:
             if [ ! -d "/cadt-devops-exercise" ]; then
               git clone https://github.com/somsothea/cadt-devops-exercise.git /home/somsothea/cadt-devops-exercise
             fi
+            ls
             cd /cadt-devops-exercise
             # Update the repository and submodules
             git pull origin main
