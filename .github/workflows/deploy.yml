@@ -1,0 +1,43 @@
+name: Deploy to Test VM
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy using SSH with password
+        uses: appleboy/ssh-action@master
+        with:
+          host: 36.37.134.139
+          username: somsothea
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            # Verify the connection
+            whoami
+            pwd
+            ls
+            if [ ! -d "/cadt-devops-exercise" ]; then
+              git clone https://github.com/somsothea/cadt-devops-exercise.git /cadt-devops-exercise
+            fi
+            cd /cadt-devops-exercise
+            # Update the repository and submodules
+            git pull origin main
+            git submodule init
+            git submodule update
+            
+            nvm install 16
+            nvm use 16
+            # Rebuild and restart Docker containers
+            docker compose down
+            docker compose build
+            docker compose up -d

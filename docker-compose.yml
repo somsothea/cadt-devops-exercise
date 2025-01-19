@@ -1,0 +1,68 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile-frontend
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - dev-test
+  backend-nest:
+    build:
+      context: .
+      dockerfile: Dockerfile-backend
+    container_name: backend-nest
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./backend/src:/app/src
+      - ./backend/test:/app/test
+      - ./backend/.env:/app/.env
+      - ./backend/upload:/app/upload
+    networks:
+      - dev-test
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile-nginx
+    container_name: nest-nginx
+    depends_on:
+      - backend-nest
+    environment:
+      - NGINX_SERVER_NAME=localhost
+      - NEST_HOST=backend-nest
+      - NEST_PORT=3000
+      - NGINX_MAX_BODY=100M
+    ports:
+      - 8080:8080
+    networks:
+      - dev-test
+  db:
+    image: postgres:12
+    container_name: nest-db
+    environment:
+      POSTGRES_DB: nest
+      POSTGRES_USER: nest
+      POSTGRES_PASSWORD: nest
+    ports:
+      - 5432:5432
+    volumes:
+      - postgresdata:/var/lib/postgresql
+    networks:
+      - dev-test
+  redis:
+    image: redis:5
+    container_name: nest-redis
+    ports:
+      - 6379:6379
+    networks:
+      - dev-test
+volumes:
+  postgresdata:
+
+networks:
+  dev-test:
+    name: dev-test
+    external: true
