@@ -27,7 +27,7 @@ jobs:
             pwd
             ls
             if [ ! -d "/cadt-devops-exercise" ]; then
-              git clone https://github.com/somsothea/cadt-devops-exercise.git /cadt-devops-exercise
+              git clone https://github.com/somsothea/cadt-devops-exercise.git /home/somsothea/cadt-devops-exercise
             fi
             cd /cadt-devops-exercise
             # Update the repository and submodules
